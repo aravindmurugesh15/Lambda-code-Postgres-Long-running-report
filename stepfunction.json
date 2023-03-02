@@ -1,0 +1,77 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Lambda Invoke long running query",
+  "States": {
+    "Lambda Invoke cjams long running query": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:xxxxxxxxxxx:function:lambdaname"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Choice"
+    },
+    "Choice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Or": [
+            {
+              "Not": {
+                "Variable": "$.result1",
+                "NumericEquals": 0
+              }
+            }
+          ],
+          "Next": "SendEmailHtml"
+        }
+      ],
+      "Default": "Pass"
+    },
+    "Pass": {
+      "Type": "Pass",
+      "End": true
+    },
+    "SendEmailHtml": {
+      "Type": "Task",
+      "End": true,
+      "Parameters": {
+        "Content": {
+          "Simple": {
+            "Body": {
+              "Html": {
+                "Charset": "ASCII",
+                "Data.$": "$.result"
+              }
+            },
+            "Subject": {
+              "Charset": "ASCII",
+              "Data": "Production: Long Running Queries"
+            }
+          }
+        },
+        "FromEmailAddress": "prod-long-running@xxxx.com",
+        "Destination": {
+          "ToAddresses": [
+            "murugesh.aravind@gmail.com",
+          ]
+        }
+      },
+      "Resource": "arn:aws:states:::aws-sdk:pinpointemail:sendEmail"
+    }
+  }
+}
