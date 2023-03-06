@@ -17,3 +17,7 @@ It can be configured to run periodically using CloudWatch events.
         - Timeout: 15 minutes
     - Save
 3. test the lambda function 
+
+4. Create the step function and copy past the json then save it.
+
+5. change then lambda function and email address to sent to in the step function then save and test.
