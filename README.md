@@ -20,4 +20,6 @@ It can be configured to run periodically using CloudWatch events.
 
 4. Create the step function and copy past the json then save it.
 
-5. change then lambda function and email address to sent to in the step function then save and test.
+5. Change then lambda function name you created in the code and email address to sent to in the step function then save and test.
+
+## Run the step function 
